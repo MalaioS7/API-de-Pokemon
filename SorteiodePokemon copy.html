@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aba de Sorteio (API Pokemon) - (com GIF)</title>
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyLse4_E8pawA4Ab0f0MFJGweXgihpUbYAH1zme5BoxPzoWf7TmEvI4UzGOFsiqhzydKM&usqp=CAU">
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            font-family: Arial;
+        }
+        header{
+            background-color: #2C7BBF;
+            padding: 25px;
+            text-align: center;
+            border-bottom: 1px solid black;
+            margin-bottom: 25px;
+        }
+        #card{
+            margin: 0 auto;
+            background-color: aliceblue;
+            width: 30%;
+            text-align: center;
+            border-radius: 12px;
+            border: 2px solid rgb(143, 143, 143);
+        }
+    </style>
+</head>
+<body style="background-color: #D9D9D9;">
+    <header>
+        <h1 style="font-size: 45px; -webkit-text-stroke: 1px black; color: #F2B705;">Sorteador de Pokemon</h1><br><br>
+        <button id="buscar" style="padding: 8px; background-color: #F2B705; border: 1px solid black; border-radius: 6px;"><strong>Sortear um Pokemon</strong></button>
+    </header>
+
+    <img src="https://i.pinimg.com/originals/32/eb/23/32eb230b326ee3c76e64f619a06f6ebb.png", alt="pokebola" style="width: 25%; margin-left: 36%" id="pokebola">
+
+    <div id="card">
+        <br><h2 id="nome"></h1>
+        <img src="" id="imagem-do-pokemon" width="30%">
+        <p id="tipo" style="margin-bottom: 12px; font-size: 20px;"></p>
+        <p id="habilidade" style="margin-bottom: 12px; font-size: 20px;"></p>
+        <p id="altura" style="margin-bottom: 12px; font-size: 20px;"></p>
+        <p id="peso" style="margin-bottom: 12px; font-size: 20px;"></p>
+        <p id="experiencia" style="margin-bottom: 12px; font-size: 20px;"></p>
+    </div>
+
+    <script>
+        const botao = document.querySelector('body button')
+        const dadoRetorno = document.getElementById('nome')
+        var imagemPokemon = document.getElementById('imagem-do-pokemon')
+
+        const dadosRetorno1 = document.getElementById('tipo');
+        const dadosRetorno2 = document.getElementById('habilidade');
+        const dadosRetorno3 = document.getElementById('altura');
+        const dadosRetorno4 = document.getElementById('peso');
+        const dadosRetorno5 = document.getElementById('experiencia');
+
+        const card = document.getElementById("card") // Crie uma variável para o ID do Card
+        card.style.display = "none"; // Ele recebe "none" por enquanto mas...
+
+        const pokebola = document.getElementById("pokebola")
+        pokebola.style.display = "block"
+        
+        buscar.addEventListener('click', function(){
+            if (card.style.display == "none"){
+                card.style.display = "block"; // ...quando eu clico no "button" ele fica "block" e aparece
+            }
+            if (pokebola.style.display == "block"){
+                pokebola.style.display = "none";
+            }
+
+            x = Math.floor(Math.random()*649+1)
+            api = `https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0`
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', api)
+            xhr.onload = () => {
+                if (xhr.status == 200){
+                    const dados = JSON.parse(xhr.responseText);
+                    dadoRetorno.innerHTML = `${dados.results[x].name.toUpperCase()}`
+                    pokemon = `${dados.results[x].name}`
+
+                    new_api = `https://pokeapi.co/api/v2/pokemon/${dados.results[x].name}`
+                    const xhp = new XMLHttpRequest()
+                    xhp.open('GET', new_api)
+                    xhp.onload = () => {
+                        if (xhp.status === 200) {
+                            const dados = JSON.parse(xhp.responseText);
+
+                            id = dados.id
+                            gif = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${id}.gif`
+                            
+                            if (dados.sprites.front_default){
+                                imagemPokemon.src = gif
+                            }
+                            else{
+                                imagemPokemon.src = dados.sprites.front_default
+                            }
+
+                            dadosRetorno1.innerHTML = 
+                            `Tipo: ${dados.types[0].type.name}<br>`
+
+                            dadosRetorno2.innerHTML = 
+                            `Habilidade: ${dados.abilities[0].ability.name}<br>`
+
+                            dadosRetorno3.innerHTML = 
+                            `Altura: ${(dados.height)*10}cm<br>`
+
+                            dadosRetorno4.innerHTML = 
+                            `Peso: ${(dados.weight)/10}Kg<br>`
+
+                            dadosRetorno5.innerHTML = 
+                            `Experiência: ${dados.base_experience}<br>`
+                        }
+                    }
+                    xhp.send();
+                }
+            }
+            xhr.send();            
+        })
+    </script>
+</body>
+</html>

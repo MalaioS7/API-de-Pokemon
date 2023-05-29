@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aba de Pesquisa (API Pokemon)</title>
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyLse4_E8pawA4Ab0f0MFJGweXgihpUbYAH1zme5BoxPzoWf7TmEvI4UzGOFsiqhzydKM&usqp=CAU">
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        section{
+            background-color: #2C7BBF;
+            width: 30rem;
+            height: 100vh;
+            padding: 30px;
+            border-right: 2px solid black;
+            display: inline-block;
+            float: left;
+        }
+        .content{
+            margin: 15% auto;
+            text-align: center;
+            background-color: #162D59;
+            width: 60%;
+            border: 1px solid #757575;
+            border-radius: 8px;
+            padding: 25px;
+            color: white
+        }
+        img{
+            margin: 8%;
+            width: 28rem;
+            clear: right;
+        }
+    </style>
+</head>
+<body id="corpo">
+    <section>
+        <div class="header" style="text-align: center; margin-bottom: 8px; color: #F2B705;"> 
+            <h1 style="font-size: 40px; -webkit-text-stroke: 1px black;">Pesquise pelo seu Pokemon!</h1><br><br>
+            <input type="text" placeholder="Digite um Pokemon" id="entrada" style="width: 200px; border: 1px solid black;padding: 10px; border-radius: 8px;"></input>
+            <button id="buscar" style="padding: 8px; background-color: #F2B705; color: black; border-radius: 4px; border: 1px solid black "><strong>Revelar Pokemon</strong></button>
+        </div>
+        <div class="content">
+            <h1></h1><br>
+            <p id="tipo" style="margin-bottom: 12px; font-size: 19px;"></p>
+            <p id="habilidade" style="margin-bottom: 12px; font-size: 19px;"></p>
+            <p id="altura" style="margin-bottom: 12px; font-size: 19px;"></p>
+            <p id="peso" style="margin-bottom: 12px; font-size: 19px;"></p>
+            <p id="experiencia" style="margin-bottom: 12px; font-size: 19px;"></p>
+        </div>
+    </section>
+
+    <img src="" id="imagem-do-pokemon">
+
+    <script>
+        const dadosRetorno = document.getElementById('tipo');
+        const dadosRetorno2 = document.getElementById('habilidade');
+        const dadosRetorno3 = document.getElementById('altura');
+        const dadosRetorno4 = document.getElementById('peso');
+        const dadosRetorno5 = document.getElementById('experiencia');
+        var nomeTitulo = document.querySelector('.content h1');
+        var imagemPokemon = document.getElementById('imagem-do-pokemon');
+        const corpo = document.getElementById('corpo')
+        const card = document.querySelector("section .content")
+
+        card.style.display = "none";
+
+        // Ele faz com que a pesquisa funcione sem clicar no button
+        const botao = document.querySelector('.header button');
+        entrada.addEventListener("keydown", function (event){
+            if (event.key == "Enter"){ // quando clicado no Enter aciona a função do button como se ele estivesse sido clicado
+                event.preventDefault();
+                botao.click()
+            }   
+        })
+
+        buscar.addEventListener("click", function(){
+            // recebe o valor digitado e atribui como uma variável pokemon para ser pesquisado na API
+            var entrada = document.getElementById("entrada");
+            pokemon = entrada.value.toLowerCase(); // deixa o que foi digitado tudo em minúsculo
+
+            if (card.style.display === "none"){
+                card.style.display = "block";
+            }
+
+            // novo link da API
+            api = `https://pokeapi.co/api/v2/pokemon/${pokemon}`
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', api);
+            xhr.onload = () => {
+                if (xhr.status === 200){
+                    const dados = JSON.parse(xhr.responseText);
+                    
+                    nomeTitulo.innerHTML = 
+                    `${dados.name.toUpperCase()}`
+
+                    dadosRetorno.innerHTML = 
+                    `Tipo: ${dados.types[0].type.name}<br>`
+
+                    dadosRetorno2.innerHTML = 
+                    `Habilidade: ${dados.abilities[0].ability.name}<br>`
+
+                    dadosRetorno3.innerHTML = 
+                    `Altura: ${(dados.height)*10}cm<br>`
+
+                    dadosRetorno4.innerHTML = 
+                    `Peso: ${(dados.weight)/10}Kg<br>`
+
+                    dadosRetorno5.innerHTML = 
+                    `Experiência: ${dados.base_experience}<br>`
+
+                    imagemPokemon.src = dados.sprites.front_default
+
+                    x = Math.floor(Math.random()*10+1)
+                    cor = dados.game_indices[x].version.name
+                    if (dados.game_indices[x].version.name == ""){
+                        for (var i = 0; i < dados.game_indices.length; i++){
+                            cor = dados.game_indices[i].version.name
+                        }
+                    }
+                    corpo.style.backgroundColor = `${cor}`;
+                }
+            }
+            xhr.send();
+            const input = document.getElementById("entrada");
+            input.value = ''
+        })
+    </script>
+</body>
+</html>
